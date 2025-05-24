@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BaseService } from 'src/common/baseService';
-import { Artist } from './models/artist.model';
+import { Track } from './models/track.model';
 
 @Injectable()
-export class ArtistService extends BaseService<Artist> {}
+export class TrackService extends BaseService<Track> {}
