@@ -40,6 +40,10 @@ export class FavoritesService {
     favoritesArray: string[],
   ) {
     try {
+      if (favoritesArray.includes(id)) {
+        return `${entityName} already added`;
+      }
+
       service.findById(id);
       favoritesArray.push(id);
 
@@ -75,6 +79,53 @@ export class FavoritesService {
 
   addArtist(id: string) {
     return this.addToFavorites(
+      id,
+      this.artistService,
+      'Artist',
+      this.favorites.artists,
+    );
+  }
+
+  private removeFromFavorites(
+    id: string,
+    service: ArtistService | AlbumService | TrackService,
+    entityName: string,
+    favoritesArray: string[],
+  ) {
+    try {
+      service.findById(id);
+      favoritesArray.splice(favoritesArray.indexOf(id));
+
+      return `${entityName} removed from Favorites successfully`;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        error.message = `${entityName} with this id is not in Favorites`;
+      }
+
+      throw error;
+    }
+  }
+
+  removeTrack(id: string) {
+    return this.removeFromFavorites(
+      id,
+      this.trackService,
+      'Track',
+      this.favorites.tracks,
+    );
+  }
+
+  removeAlbum(id: string) {
+    return this.removeFromFavorites(
+      id,
+      this.albumService,
+      'Album',
+      this.favorites.albums,
+    );
+  }
+
+  removeArtist(id: string) {
+    return this.removeFromFavorites(
       id,
       this.artistService,
       'Artist',
