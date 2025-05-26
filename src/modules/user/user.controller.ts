@@ -9,7 +9,9 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
+import { plainToInstance } from 'class-transformer';
+import { UserEntity } from './entity/user.entity';
 
 @Controller('user')
 export class UserController {
@@ -17,22 +19,38 @@ export class UserController {
 
   @Post()
   create(@Body() dto: CreateUserDto) {
-    return this.userService.create(dto);
+    const newUser = this.userService.create(dto);
+
+    return plainToInstance(UserEntity, newUser, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Get()
   getAll() {
-    return this.userService.getAll();
+    const users = this.userService.getAll();
+
+    return plainToInstance(UserEntity, users, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Get(':id')
   findById(@Param('id') id: string) {
-    return this.userService.findById(id);
+    const user = this.userService.findById(id);
+
+    return plainToInstance(UserEntity, user, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
-    return this.userService.update(id, dto);
+  update(@Param('id') id: string, @Body() dto: UpdateUserPasswordDto) {
+    const updatedUser = this.userService.updatePassword(id, dto);
+
+    return plainToInstance(UserEntity, updatedUser, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Delete(':id')
