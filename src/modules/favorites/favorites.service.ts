@@ -94,7 +94,13 @@ export class FavoritesService {
   ) {
     try {
       service.findById(id);
-      favoritesArray.splice(favoritesArray.indexOf(id));
+      const itemIndex = favoritesArray.indexOf(id);
+
+      if (itemIndex === -1) {
+        return 'Item is not in favorites';
+      }
+
+      favoritesArray.splice(itemIndex);
 
       return `${entityName} removed from Favorites successfully`;
     } catch (error) {

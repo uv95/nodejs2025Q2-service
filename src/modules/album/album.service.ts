@@ -1,6 +1,35 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { BaseService } from 'src/common/baseService';
 import { Album } from './model/album.model';
+import { isValidUUID } from 'src/utils/validateUUID';
+import { FavoritesService } from '../favorites/favorites.service';
 
 @Injectable()
-export class AlbumService extends BaseService<Album> {}
+export class AlbumService extends BaseService<Album> {
+  constructor(
+    @Inject(forwardRef(() => FavoritesService))
+    private readonly favoriteService: FavoritesService,
+  ) {
+    super();
+  }
+
+  delete(id: string): void {
+    if (!isValidUUID(id)) {
+      throw new BadRequestException('Invalid id');
+    }
+    const itemIndex = this.items.findIndex((item) => item.id === id);
+
+    if (itemIndex === -1) {
+      throw new NotFoundException(`Item with id ${id} not found`);
+    }
+
+    this.favoriteService.removeAlbum(id);
+    this.items.splice(itemIndex, 1);
+  }
+}
