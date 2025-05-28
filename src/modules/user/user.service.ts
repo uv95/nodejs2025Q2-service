@@ -15,7 +15,7 @@ export class UserService extends BaseService<User> {
     const newUser = {
       ...data,
       id,
-      version: 0,
+      version: 1,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     };
