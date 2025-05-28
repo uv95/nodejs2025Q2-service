@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   Post,
   Put,
@@ -35,6 +36,7 @@ export class ArtistController {
     return this.artistService.update(id, dto);
   }
 
+  @HttpCode(204)
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.artistService.delete(id);

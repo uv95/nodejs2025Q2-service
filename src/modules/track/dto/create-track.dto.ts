@@ -1,15 +1,14 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
+import { IsStringOrNull } from 'src/common/customDecorators/isStringOrNull';
 
 export class CreateTrackDto {
   @IsString()
   name: string;
 
-  @IsOptional()
-  @IsString()
+  @IsStringOrNull({ message: 'artistId must be null or of type string' })
   artistId: string | null;
 
-  @IsOptional()
-  @IsString()
+  @IsStringOrNull({ message: 'albumId must be null or of type string' })
   albumId: string | null;
 
   @IsNumber()
