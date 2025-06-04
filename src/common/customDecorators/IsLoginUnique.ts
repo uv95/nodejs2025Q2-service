@@ -15,6 +15,10 @@ export class IsLoginUniqueConstraint implements ValidatorConstraintInterface {
   constructor(private prisma: PrismaService) {}
 
   async validate(login: string, _args: ValidationArguments): Promise<boolean> {
+    if (typeof login !== 'string') {
+      return true;
+    }
+
     const existingUser = await this.prisma.user.findUnique({
       where: { login },
     });
