@@ -5,14 +5,13 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { isValidUUID } from 'src/utils/validateUUID';
-import { CreateAlbumDto } from './dto/create-album.dto';
-import { UpdateAlbumDto } from './dto/update-album.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class AlbumService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: CreateAlbumDto) {
+  async create(data: Prisma.AlbumCreateInput) {
     return await this.prisma.album.create({ data });
   }
 
@@ -36,7 +35,7 @@ export class AlbumService {
     return album;
   }
 
-  async update(id: string, data: UpdateAlbumDto) {
+  async update(id: string, data: Prisma.AlbumUpdateInput) {
     if (!isValidUUID(id)) {
       throw new BadRequestException('Invalid id');
     }

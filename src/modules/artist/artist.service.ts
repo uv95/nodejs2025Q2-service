@@ -1,45 +1,69 @@
 import {
   BadRequestException,
-  forwardRef,
-  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { BaseService } from 'src/common/baseService';
-import { Artist } from './model/artist.model';
-import { FavoritesService } from '../favorites/favorites.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { isValidUUID } from 'src/utils/validateUUID';
-import { TrackService } from '../track/track.service';
-import { AlbumService } from '../album/album.service';
-import { removeReference } from 'src/utils/removeReference';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
-export class ArtistService extends BaseService<Artist> {
-  constructor(
-    @Inject(forwardRef(() => FavoritesService))
-    private readonly favoriteService: FavoritesService,
-    @Inject(forwardRef(() => TrackService))
-    private readonly trackService: TrackService,
-    @Inject(forwardRef(() => AlbumService))
-    private readonly albumService: AlbumService,
-  ) {
-    super();
+export class ArtistService {
+  constructor(private prisma: PrismaService) {}
+
+  async create(data: Prisma.ArtistCreateInput) {
+    return await this.prisma.artist.create({ data });
   }
 
-  delete(id: string): void {
+  async findAll() {
+    return await this.prisma.artist.findMany();
+  }
+
+  async findById(id: string) {
     if (!isValidUUID(id)) {
       throw new BadRequestException('Invalid id');
     }
-    const itemIndex = this.items.findIndex((item) => item.id === id);
 
-    if (itemIndex === -1) {
-      throw new NotFoundException(`Item with id ${id} not found`);
+    const artist = await this.prisma.artist.findUnique({
+      where: { id },
+    });
+
+    if (!artist) {
+      throw new NotFoundException('Artist with this id not found');
     }
 
-    removeReference(this.trackService, id, 'artistId');
-    removeReference(this.albumService, id, 'artistId');
+    return artist;
+  }
 
-    this.favoriteService.removeArtist(id);
-    this.items.splice(itemIndex, 1);
+  async update(id: string, data: Prisma.ArtistUpdateInput) {
+    if (!isValidUUID(id)) {
+      throw new BadRequestException('Invalid id');
+    }
+
+    const artist = await this.prisma.artist.findUnique({
+      where: { id },
+    });
+
+    if (!artist) {
+      throw new NotFoundException('Artist with this id not found');
+    }
+
+    return await this.prisma.artist.update({ where: { id }, data });
+  }
+
+  async delete(id: string) {
+    if (!isValidUUID(id)) {
+      throw new BadRequestException('Invalid id');
+    }
+
+    const artist = await this.prisma.artist.findUnique({
+      where: { id },
+    });
+
+    if (!artist) {
+      throw new NotFoundException('Artist with this id not found');
+    }
+
+    return await this.prisma.artist.delete({ where: { id } });
   }
 }

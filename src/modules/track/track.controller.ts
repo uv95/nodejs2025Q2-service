@@ -23,7 +23,7 @@ export class TrackController {
 
   @Get()
   getAll() {
-    return this.trackService.getAll();
+    return this.trackService.findAll();
   }
 
   @Get(':id')

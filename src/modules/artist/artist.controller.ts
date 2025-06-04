@@ -23,7 +23,7 @@ export class ArtistController {
 
   @Get()
   getAll() {
-    return this.artistService.getAll();
+    return this.artistService.findAll();
   }
 
   @Get(':id')
