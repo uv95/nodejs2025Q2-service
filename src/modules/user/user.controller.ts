@@ -19,8 +19,8 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  create(@Body() dto: CreateUserDto) {
-    const newUser = this.userService.create(dto);
+  async create(@Body() dto: CreateUserDto) {
+    const newUser = await this.userService.create(dto);
 
     return plainToInstance(UserEntity, newUser, {
       excludeExtraneousValues: true,
@@ -28,8 +28,8 @@ export class UserController {
   }
 
   @Get()
-  getAll() {
-    const users = this.userService.getAll();
+  async findAll() {
+    const users = await this.userService.findAll();
 
     return plainToInstance(UserEntity, users, {
       excludeExtraneousValues: true,
@@ -37,8 +37,8 @@ export class UserController {
   }
 
   @Get(':id')
-  findById(@Param('id') id: string) {
-    const user = this.userService.findById(id);
+  async findById(@Param('id') id: string) {
+    const user = await this.userService.findById(id);
 
     return plainToInstance(UserEntity, user, {
       excludeExtraneousValues: true,
@@ -46,8 +46,8 @@ export class UserController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateUserPasswordDto) {
-    const updatedUser = this.userService.updatePassword(id, dto);
+  async update(@Param('id') id: string, @Body() dto: UpdateUserPasswordDto) {
+    const updatedUser = await this.userService.updatePassword(id, dto);
 
     return plainToInstance(UserEntity, updatedUser, {
       excludeExtraneousValues: true,
@@ -56,7 +56,7 @@ export class UserController {
 
   @HttpCode(204)
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.userService.delete(id);
+  async delete(@Param('id') id: string) {
+    return await this.userService.delete(id);
   }
 }

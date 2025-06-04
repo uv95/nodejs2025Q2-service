@@ -17,28 +17,28 @@ export class ArtistController {
   constructor(private readonly artistService: ArtistService) {}
 
   @Post()
-  create(@Body() dto: CreateArtistDto) {
-    return this.artistService.create(dto);
+  async create(@Body() dto: CreateArtistDto) {
+    return await this.artistService.create(dto);
   }
 
   @Get()
-  getAll() {
-    return this.artistService.findAll();
+  async findAll() {
+    return await this.artistService.findAll();
   }
 
   @Get(':id')
-  findById(@Param('id') id: string) {
-    return this.artistService.findById(id);
+  async findById(@Param('id') id: string) {
+    return await this.artistService.findById(id);
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateArtistDto) {
-    return this.artistService.update(id, dto);
+  async update(@Param('id') id: string, @Body() dto: UpdateArtistDto) {
+    return await this.artistService.update(id, dto);
   }
 
   @HttpCode(204)
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.artistService.delete(id);
+  async delete(@Param('id') id: string) {
+    return await this.artistService.delete(id);
   }
 }
