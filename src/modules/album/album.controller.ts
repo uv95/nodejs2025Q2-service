@@ -23,7 +23,7 @@ export class AlbumController {
 
   @Get()
   getAll() {
-    return this.albumService.getAll();
+    return this.albumService.findAll();
   }
 
   @Get(':id')
