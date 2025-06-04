@@ -50,6 +50,10 @@ export class UserService {
 
     const user = await this.prisma.user.findUnique({ where: { id } });
 
+    if (!user) {
+      throw new NotFoundException('User with this id not found');
+    }
+
     if (user.password !== data.oldPassword) {
       throw new ForbiddenException('Password is incorrect');
     }
