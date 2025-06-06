@@ -62,7 +62,9 @@ export class UserService {
       where: { id },
       data: {
         password: data.newPassword,
-        version: ++user.version,
+        version: {
+          increment: 1,
+        },
       },
     });
   }
