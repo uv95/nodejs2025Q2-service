@@ -32,12 +32,15 @@ services:
       - '3000:3000'
     volumes:
       - ./src:/app/src
+      - ./prisma:/app/prisma
+      - ./package.json:/app/package.json
+      - ./tsconfig.json:/app/tsconfig.json
+      - ./.env:/app/.env
     depends_on:
       postgres:
         condition: service_healthy
     networks:
       - backend
-    command: sh -c "npx prisma migrate deploy && node dist/main"
 
 volumes:
   db-data:
