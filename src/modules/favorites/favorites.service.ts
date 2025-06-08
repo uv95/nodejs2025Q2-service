@@ -29,7 +29,12 @@ export class FavoritesService {
   constructor(private prisma: PrismaService) {}
 
   async getFavorites() {
-    const user = await this.prisma.user.findFirst(); //temporary
+    const user =
+      (await this.prisma.user.findFirst()) ||
+      (await this.prisma.user.create({
+        data: { login: 'TestUser', password: 'testpassword', version: 1 },
+      })); //temporary
+
     const [albums, artists, tracks] = await Promise.all([
       this.prisma.album.findMany({
         where: {
@@ -101,9 +106,14 @@ export class FavoritesService {
     try {
       const model = entityName.toLowerCase();
       await this.validateItem(model, id);
-      const user = await this.prisma.user.findFirst(); //temporary
-      const isInFavorites = await this.isFavorite(model, user.id, id);
       const isAddingToFavorites = action === Action.CONNECT;
+      const user =
+        (await this.prisma.user.findFirst()) ||
+        (await this.prisma.user.create({
+          data: { login: 'TestUser', password: 'testpassword', version: 1 },
+        })); //temporary
+
+      const isInFavorites = await this.isFavorite(model, user.id, id);
 
       if (isAddingToFavorites && isInFavorites) {
         return `${entityName} already added to favorites`;

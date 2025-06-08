@@ -16,6 +16,11 @@ services:
       - db-logs:/var/log/postgresql
     networks:
       - backend
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'postgres']
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   app:
     build: .
@@ -28,9 +33,11 @@ services:
     volumes:
       - ./src:/app/src
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - backend
+    command: sh -c "npx prisma migrate deploy && node dist/main"
 
 volumes:
   db-data:
