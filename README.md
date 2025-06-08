@@ -1,19 +1,24 @@
-# Home Library Service
+# Home Library
 
-A RESTful API server for managing users, tracks, albums, artists and favorites — built with Nestjs.
+NestJS backend for a home music library management app.
+
+## Stack
+
+- **Node.js**
+- **NestJS**
+- **PostgreSQL**
+- **Prisma ORM**
+- **Docker**
 
 ## Features
 
-* CRUD operations for:
+- CRUD operations for:
 
-  * **Users**
-  * **Tracks**
-  * **Artists**
-  * **Albums**
- 
-* Adding/removal to/from favorites 
-* RESTful endpoints following best practices
-* In-memory data storage
+  - **Users**
+  - **Tracks**
+  - **Artists**
+  - **Albums**
+  - **Favorites**
 
 ## Installation
 
@@ -28,6 +33,12 @@ cd home-library
 
 ```bash
 npm install
+```
+
+### Add .env
+
+```bash
+mv .env.example .env
 ```
 
 ## Running the Application
@@ -45,7 +56,25 @@ npm run build
 npm start
 ```
 
-The server will start on `http://localhost:4000` by default.
+The server will start on `http://localhost:3000` by default.
+
+## PostgreSQL & Prisma
+
+- Prisma schema defined in `prisma/schema.prisma`
+- Environment variables loaded from `.env`
+- Apply migrations:
+
+  ```bash
+  npx prisma migrate deploy
+  ```
+
+## Docker
+
+To run the full environment:
+
+```bash
+docker-compose up --build
+```
 
 ## API Endpoints
 
@@ -81,8 +110,8 @@ The server will start on `http://localhost:4000` by default.
 
 ### Albums
 
-| Method | Endpoint      | Description       |
-| ------ | ------------- | ----------------- |
+| Method | Endpoint     | Description      |
+| ------ | ------------ | ---------------- |
 | GET    | `/album`     | Get all albums   |
 | GET    | `/album/:id` | Get album by ID  |
 | POST   | `/album`     | Create new album |
@@ -91,13 +120,12 @@ The server will start on `http://localhost:4000` by default.
 
 ### Favorites
 
-| Method | Endpoint      | Description       |
-| ------ | ------------- | ----------------- |
-| GET    | `/favs`     | Get all favorites   |
-| POST    | `/favs/track/:id` | Add track to favorites  |
-| DELETE   | `/favs/track/:id`     | Remove track from favorites |
-| POST    | `/favs/artist/:id` | Add artist to favorites  |
-| DELETE   | `/favs/artist/:id`     | Remove artist from favorites |
-| POST    | `/favs/album/:id` | Add album to favorites  |
-| DELETE   | `/favs/album/:id`     | Remove album from favorites |
-
+| Method | Endpoint           | Description                  |
+| ------ | ------------------ | ---------------------------- |
+| GET    | `/favs`            | Get all favorites            |
+| POST   | `/favs/track/:id`  | Add track to favorites       |
+| DELETE | `/favs/track/:id`  | Remove track from favorites  |
+| POST   | `/favs/artist/:id` | Add artist to favorites      |
+| DELETE | `/favs/artist/:id` | Remove artist from favorites |
+| POST   | `/favs/album/:id`  | Add album to favorites       |
+| DELETE | `/favs/album/:id`  | Remove album from favorites  |
