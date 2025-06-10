@@ -6,10 +6,13 @@ import { SwaggerModule } from '@nestjs/swagger';
 import * as fs from 'node:fs/promises';
 import * as YAML from 'yaml';
 import { useContainer } from 'class-validator';
+import { CustomLogger } from './modules/logger/logger.service';
 
 async function bootstrap() {
   const PORT = process.env.PORT || 4000;
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: new CustomLogger(),
+  });
 
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
