@@ -7,6 +7,7 @@ import * as fs from 'node:fs/promises';
 import * as YAML from 'yaml';
 import { useContainer } from 'class-validator';
 import { CustomLogger } from './modules/logger/logger.service';
+import { LoggerInterceptor } from './modules/logger/logger.interceptor';
 
 async function bootstrap() {
   const PORT = process.env.PORT || 4000;
@@ -21,6 +22,9 @@ async function bootstrap() {
   const doc = YAML.parse(content);
 
   SwaggerModule.setup('doc', app, doc);
+
+  const loggerService = app.get(CustomLogger);
+  app.useGlobalInterceptors(new LoggerInterceptor(loggerService));
 
   app.useGlobalPipes(
     new ValidationPipe({

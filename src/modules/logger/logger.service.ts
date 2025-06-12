@@ -1,5 +1,5 @@
 import { Injectable, LoggerService } from '@nestjs/common';
-import { styleText } from 'node:util';
+import { colors } from 'src/utils/consts';
 
 enum LogLevel {
   ERROR = 'error',
@@ -23,23 +23,19 @@ export class CustomLogger implements LoggerService {
 
   log(message: string) {
     if (this.shouldLog(LogLevel.LOG)) {
-      console.log(`${styleText(['bold', 'white'], 'LOG')} ${message}`);
+      console.log(`${colors.magenta}[INFO]${colors.reset}: ${message}`);
     }
   }
 
   error(message: string) {
     if (this.shouldLog(LogLevel.ERROR)) {
-      console.log(
-        `${styleText(['bold', 'red'], 'ERROR')} ${styleText(['red'], message)}`,
-      );
+      console.log(`${colors.red}[ERROR]${colors.reset}: ${message}`);
     }
   }
 
   warn(message: string) {
     if (this.shouldLog(LogLevel.WARN)) {
-      console.log(
-        `${styleText(['bold', 'yellow'], 'WARN')} ${styleText(['yellow'], message)}`,
-      );
+      console.log(`${colors.yellow}[WARN]${colors.reset}: ${message}`);
     }
   }
 }
