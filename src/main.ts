@@ -7,6 +7,7 @@ import * as fs from 'node:fs/promises';
 import * as YAML from 'yaml';
 import { useContainer } from 'class-validator';
 import { CustomLogger } from './modules/logger/logger.service';
+import { CustomExceptionFilter } from './common/filters/exception.filter';
 
 async function bootstrap() {
   const PORT = process.env.PORT || 4000;
@@ -29,9 +30,24 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  const logger = app.get(CustomLogger);
+  app.useGlobalFilters(new CustomExceptionFilter(logger));
+
+  process.on('uncaughtException', (err) => {
+    logger.error(`Uncaught Exception: ${err.message}`);
+  });
+
+  process.on('unhandledRejection', (err) => {
+    logger.error(`Unhandled Rejection: ${err}`);
+  });
+
   await app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
     console.log(`API is available at http://localhost:${PORT}/doc`);
   });
 }
+
 bootstrap();
+
+// throw new Error('Test unexpected');

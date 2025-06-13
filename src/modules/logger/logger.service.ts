@@ -1,5 +1,6 @@
 import { Injectable, LoggerService } from '@nestjs/common';
 import { colors } from 'src/utils/consts';
+import { writeLogs } from 'src/utils/writeLogs';
 
 enum LogLevel {
   ERROR = 'error',
@@ -21,21 +22,24 @@ export class CustomLogger implements LoggerService {
     return this.levels.indexOf(level) <= this.currentLevelIndex;
   }
 
-  log(message: string) {
+  async log(message: string) {
     if (this.shouldLog(LogLevel.LOG)) {
       console.log(`${colors.magenta}[INFO]${colors.reset}: ${message}`);
+      await writeLogs(`[INFO]: ${message}`);
     }
   }
 
-  error(message: string) {
+  async error(message: string) {
     if (this.shouldLog(LogLevel.ERROR)) {
       console.log(`${colors.red}[ERROR]${colors.reset}: ${message}`);
+      await writeLogs(`[ERROR]: ${message}`);
     }
   }
 
-  warn(message: string) {
+  async warn(message: string) {
     if (this.shouldLog(LogLevel.WARN)) {
       console.log(`${colors.yellow}[WARN]${colors.reset}: ${message}`);
+      await writeLogs(`[WARN]: ${message}`);
     }
   }
 }
