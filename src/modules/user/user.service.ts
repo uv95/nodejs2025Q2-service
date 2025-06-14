@@ -11,15 +11,6 @@ import { isValidUUID } from 'src/utils/validateUUID';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: { login: string; password: string }) {
-    return await this.prisma.user.create({
-      data: {
-        ...data,
-        version: 1,
-      },
-    });
-  }
-
   async findAll() {
     return await this.prisma.user.findMany();
   }
@@ -35,6 +26,18 @@ export class UserService {
 
     if (!user) {
       throw new NotFoundException('User with this id not found');
+    }
+
+    return user;
+  }
+
+  async findByLogin(login: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { login },
+    });
+
+    if (!user) {
+      throw new ForbiddenException('User with this login not found');
     }
 
     return user;
