@@ -8,7 +8,7 @@ import {
 import { Request, Response } from 'express';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 
-@Catch(HttpException)
+@Catch()
 export class CustomExceptionFilter implements ExceptionFilter {
   constructor(private readonly logger: CustomLogger) {}
 

@@ -9,6 +9,8 @@ import { useContainer } from 'class-validator';
 import { CustomLogger } from './modules/logger/logger.service';
 import { CustomExceptionFilter } from './common/filters/exception.filter';
 
+const logger = new CustomLogger();
+
 async function bootstrap() {
   const PORT = process.env.PORT || 4000;
   const app = await NestFactory.create(AppModule, {
@@ -31,16 +33,7 @@ async function bootstrap() {
     }),
   );
 
-  const logger = app.get(CustomLogger);
   app.useGlobalFilters(new CustomExceptionFilter(logger));
-
-  process.on('uncaughtException', (err) => {
-    logger.error(`Uncaught Exception: ${err.message}`);
-  });
-
-  process.on('unhandledRejection', (err) => {
-    logger.error(`Unhandled Rejection: ${err}`);
-  });
 
   await app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
@@ -50,4 +43,12 @@ async function bootstrap() {
 
 bootstrap();
 
-// throw new Error('Test unexpected');
+process.on('uncaughtException', (err) => {
+  logger.error(`Uncaught Exception: ${err.message}`);
+});
+
+process.on('unhandledRejection', (err) => {
+  logger.error(`Unhandled Rejection: ${err}`);
+});
+
+throw new Error('Test');
