@@ -5,16 +5,27 @@ import {
   Get,
   HttpCode,
   Param,
+  Post,
   Put,
 } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { UserEntity } from './entity/user.entity';
 import { UserService } from './user.service';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @Post()
+  async create(@Body() dto: CreateUserDto) {
+    const newUser = await this.userService.create(dto);
+
+    return plainToInstance(UserEntity, newUser, {
+      excludeExtraneousValues: true,
+    });
+  }
 
   @Get()
   async findAll() {

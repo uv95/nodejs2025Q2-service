@@ -15,7 +15,7 @@ export class AuthService {
   async login(data: {
     login: string;
     password: string;
-  }): Promise<{ token: string }> {
+  }): Promise<{ accessToken: string }> {
     const user = await this.usersService.findByLogin(data.login);
 
     if (!(await bcrypt.compare(data.password, user.password))) {
@@ -25,7 +25,7 @@ export class AuthService {
     const payload = { sub: user.id, login: user.login };
 
     return {
-      token: await this.jwtService.signAsync(payload),
+      accessToken: await this.jwtService.signAsync(payload),
     };
   }
 

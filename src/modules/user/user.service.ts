@@ -11,6 +11,15 @@ import { isValidUUID } from 'src/utils/validateUUID';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
+  async create(data: { login: string; password: string }) {
+    return await this.prisma.user.create({
+      data: {
+        ...data,
+        version: 1,
+      },
+    });
+  }
+
   async findAll() {
     return await this.prisma.user.findMany();
   }
