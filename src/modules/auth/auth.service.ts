@@ -50,22 +50,26 @@ export class AuthService {
       throw new UnauthorizedException('Refresh token is required');
     }
 
-    const payload = await this.jwtService.verifyAsync(refreshToken, {
-      secret: process.env.JWT_SECRET_REFRESH_KEY,
-    });
+    try {
+      const payload = await this.jwtService.verifyAsync(refreshToken, {
+        secret: process.env.JWT_SECRET_REFRESH_KEY,
+      });
 
-    const user = await this.prisma.user.findUnique({
-      where: { id: payload.userId },
-    });
+      const user = await this.prisma.user.findUnique({
+        where: { id: payload.userId },
+      });
 
-    if (!user || refreshToken !== user.refreshToken) {
+      if (!user || refreshToken !== user.refreshToken) {
+        throw new ForbiddenException('Invalid refresh token');
+      }
+
+      const tokens = await this.generateTokens(user.id, user.login);
+      await this.saveRefreshToken(user.id, tokens.refreshToken);
+
+      return tokens;
+    } catch (error) {
       throw new ForbiddenException('Invalid refresh token');
     }
-
-    const tokens = await this.generateTokens(user.id, user.login);
-    await this.saveRefreshToken(user.id, tokens.refreshToken);
-
-    return tokens;
   }
 
   async generateTokens(userId: string, login: string) {
