@@ -1,8 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UserService } from '../user/user.service';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcryptjs';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +19,7 @@ export class AuthService {
     const user = await this.usersService.findByLogin(data.login);
 
     if (!(await bcrypt.compare(data.password, user.password))) {
-      throw new UnauthorizedException();
+      throw new ForbiddenException('Password is incorrect');
     }
 
     const payload = { sub: user.id, login: user.login };

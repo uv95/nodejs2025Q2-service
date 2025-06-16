@@ -6,11 +6,19 @@ enum LogLevel {
   ERROR = 'error',
   WARN = 'warn',
   LOG = 'log',
+  DEBUG = 'debug',
+  VERBOSE = 'verbose',
 }
 
 @Injectable()
 export class CustomLogger implements LoggerService {
-  private levels: LogLevel[] = [LogLevel.ERROR, LogLevel.WARN, LogLevel.LOG];
+  private levels: LogLevel[] = [
+    LogLevel.ERROR,
+    LogLevel.WARN,
+    LogLevel.LOG,
+    LogLevel.DEBUG,
+    LogLevel.VERBOSE,
+  ];
   private currentLevelIndex: number;
 
   constructor() {
@@ -31,7 +39,7 @@ export class CustomLogger implements LoggerService {
 
   async error(message: string) {
     if (this.shouldLog(LogLevel.ERROR)) {
-      console.log(`${colors.red}[ERROR]${colors.reset}: ${message}`);
+      console.error(`${colors.red}[ERROR]${colors.reset}: ${message}`);
       await writeLogs(`[ERROR]: ${message}`);
     }
   }
@@ -40,6 +48,20 @@ export class CustomLogger implements LoggerService {
     if (this.shouldLog(LogLevel.WARN)) {
       console.log(`${colors.yellow}[WARN]${colors.reset}: ${message}`);
       await writeLogs(`[WARN]: ${message}`);
+    }
+  }
+
+  async debug(message: string) {
+    if (this.shouldLog(LogLevel.DEBUG)) {
+      console.debug(`${colors.cyan}[DEBUG]${colors.reset}: ${message}`);
+      await writeLogs(`[DEBUG]: ${message}`);
+    }
+  }
+
+  async verbose(message: string) {
+    if (this.shouldLog(LogLevel.VERBOSE)) {
+      console.log(`${colors.blue}[VERBOSE]${colors.reset}: ${message}`);
+      await writeLogs(`[VERBOSE]: ${message}`);
     }
   }
 }
