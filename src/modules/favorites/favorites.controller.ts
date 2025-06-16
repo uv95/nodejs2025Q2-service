@@ -12,7 +12,7 @@ import { FavoritesService } from './favorites.service';
 
 interface RequestWithUser extends Request {
   user: {
-    sub: string;
+    userId: string;
     login: string;
   };
 }
@@ -23,28 +23,28 @@ export class FavoritesController {
 
   @Get()
   async getFavorites(@Req() req: RequestWithUser) {
-    const userId = req.user.sub;
+    const { userId } = req.user;
 
     return await this.favoritesService.getFavorites(userId);
   }
 
   @Post('track/:id')
   async addTrack(@Param('id') id: string, @Req() req: RequestWithUser) {
-    const userId = req.user.sub;
+    const { userId } = req.user;
 
     return await this.favoritesService.addTrack(id, userId);
   }
 
   @Post('album/:id')
   async addAlbum(@Param('id') id: string, @Req() req: RequestWithUser) {
-    const userId = req.user.sub;
+    const { userId } = req.user;
 
     return await this.favoritesService.addAlbum(id, userId);
   }
 
   @Post('artist/:id')
   async addArtist(@Param('id') id: string, @Req() req: RequestWithUser) {
-    const userId = req.user.sub;
+    const { userId } = req.user;
 
     return await this.favoritesService.addArtist(id, userId);
   }
@@ -52,7 +52,7 @@ export class FavoritesController {
   @HttpCode(204)
   @Delete('track/:id')
   async removeTrack(@Param('id') id: string, @Req() req: RequestWithUser) {
-    const userId = req.user.sub;
+    const { userId } = req.user;
 
     return await this.favoritesService.removeTrack(id, userId);
   }
@@ -60,7 +60,7 @@ export class FavoritesController {
   @HttpCode(204)
   @Delete('album/:id')
   async removeAlbum(@Param('id') id: string, @Req() req: RequestWithUser) {
-    const userId = req.user.sub;
+    const { userId } = req.user;
 
     return await this.favoritesService.removeAlbum(id, userId);
   }
@@ -68,7 +68,7 @@ export class FavoritesController {
   @HttpCode(204)
   @Delete('artist/:id')
   async removeArtist(@Param('id') id: string, @Req() req: RequestWithUser) {
-    const userId = req.user.sub;
+    const { userId } = req.user;
 
     return await this.favoritesService.removeArtist(id, userId);
   }

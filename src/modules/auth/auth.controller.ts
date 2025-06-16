@@ -26,4 +26,11 @@ export class AuthController {
       excludeExtraneousValues: true,
     });
   }
+
+  @Public()
+  @HttpCode(200)
+  @Post('refresh')
+  async refresh(@Body() body: { refreshToken: string }) {
+    return await this.authService.refreshTokens(body.refreshToken);
+  }
 }
