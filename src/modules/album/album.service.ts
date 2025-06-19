@@ -1,40 +1,69 @@
 import {
   BadRequestException,
-  forwardRef,
-  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { BaseService } from 'src/common/baseService';
-import { Album } from './model/album.model';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { isValidUUID } from 'src/utils/validateUUID';
-import { FavoritesService } from '../favorites/favorites.service';
-import { TrackService } from '../track/track.service';
-import { removeReference } from 'src/utils/removeReference';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
-export class AlbumService extends BaseService<Album> {
-  constructor(
-    @Inject(forwardRef(() => FavoritesService))
-    private readonly favoriteService: FavoritesService,
-    @Inject(forwardRef(() => TrackService))
-    private readonly trackService: TrackService,
-  ) {
-    super();
+export class AlbumService {
+  constructor(private prisma: PrismaService) {}
+
+  async create(data: Prisma.AlbumCreateInput) {
+    return await this.prisma.album.create({ data });
   }
 
-  delete(id: string): void {
+  async findAll() {
+    return await this.prisma.album.findMany();
+  }
+
+  async findById(id: string) {
     if (!isValidUUID(id)) {
       throw new BadRequestException('Invalid id');
     }
-    const itemIndex = this.items.findIndex((item) => item.id === id);
 
-    if (itemIndex === -1) {
-      throw new NotFoundException(`Item with id ${id} not found`);
+    const album = await this.prisma.album.findUnique({
+      where: { id },
+    });
+
+    if (!album) {
+      throw new NotFoundException('Album with this id not found');
     }
 
-    removeReference(this.trackService, id, 'albumId');
-    this.favoriteService.removeAlbum(id);
-    this.items.splice(itemIndex, 1);
+    return album;
+  }
+
+  async update(id: string, data: Prisma.AlbumUpdateInput) {
+    if (!isValidUUID(id)) {
+      throw new BadRequestException('Invalid id');
+    }
+
+    const album = await this.prisma.album.findUnique({
+      where: { id },
+    });
+
+    if (!album) {
+      throw new NotFoundException('Album with this id not found');
+    }
+
+    return await this.prisma.album.update({ where: { id }, data });
+  }
+
+  async delete(id: string) {
+    if (!isValidUUID(id)) {
+      throw new BadRequestException('Invalid id');
+    }
+
+    const album = await this.prisma.album.findUnique({
+      where: { id },
+    });
+
+    if (!album) {
+      throw new NotFoundException('Album with this id not found');
+    }
+
+    return await this.prisma.album.delete({ where: { id } });
   }
 }

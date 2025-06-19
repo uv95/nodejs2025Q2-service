@@ -1,35 +1,69 @@
 import {
-  Inject,
   BadRequestException,
   Injectable,
   NotFoundException,
-  forwardRef,
 } from '@nestjs/common';
-import { BaseService } from 'src/common/baseService';
-import { Track } from './model/track.model';
-import { FavoritesService } from '../favorites/favorites.service';
+import { Prisma } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { isValidUUID } from 'src/utils/validateUUID';
 
 @Injectable()
-export class TrackService extends BaseService<Track> {
-  constructor(
-    @Inject(forwardRef(() => FavoritesService))
-    private readonly favoriteService: FavoritesService,
-  ) {
-    super();
+export class TrackService {
+  constructor(private prisma: PrismaService) {}
+
+  async create(data: Prisma.TrackCreateInput) {
+    return await this.prisma.track.create({ data });
   }
 
-  delete(id: string): void {
+  async findAll() {
+    return await this.prisma.track.findMany();
+  }
+
+  async findById(id: string) {
     if (!isValidUUID(id)) {
       throw new BadRequestException('Invalid id');
     }
-    const itemIndex = this.items.findIndex((item) => item.id === id);
 
-    if (itemIndex === -1) {
-      throw new NotFoundException(`Item with id ${id} not found`);
+    const track = await this.prisma.track.findUnique({
+      where: { id },
+    });
+
+    if (!track) {
+      throw new NotFoundException('Track with this id not found');
     }
 
-    this.favoriteService.removeTrack(id);
-    this.items.splice(itemIndex, 1);
+    return track;
+  }
+
+  async update(id: string, data: Prisma.TrackUpdateInput) {
+    if (!isValidUUID(id)) {
+      throw new BadRequestException('Invalid id');
+    }
+
+    const track = await this.prisma.track.findUnique({
+      where: { id },
+    });
+
+    if (!track) {
+      throw new NotFoundException('Track with this id not found');
+    }
+
+    return await this.prisma.track.update({ where: { id }, data });
+  }
+
+  async delete(id: string) {
+    if (!isValidUUID(id)) {
+      throw new BadRequestException('Invalid id');
+    }
+
+    const track = await this.prisma.track.findUnique({
+      where: { id },
+    });
+
+    if (!track) {
+      throw new NotFoundException('Track with this id not found');
+    }
+
+    return await this.prisma.track.delete({ where: { id } });
   }
 }

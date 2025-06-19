@@ -1,4 +1,4 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Transform } from 'class-transformer';
 
 export class UserEntity {
   @Expose()
@@ -11,9 +11,11 @@ export class UserEntity {
   version: number;
 
   @Expose()
+  @Transform(({ value }) => new Date(value).getTime())
   createdAt: number;
 
   @Expose()
+  @Transform(({ value }) => new Date(value).getTime())
   updatedAt: number;
 
   @Exclude()

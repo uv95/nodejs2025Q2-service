@@ -2,30 +2,45 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
-import { randomUUID } from 'node:crypto';
-import { BaseService } from 'src/common/baseService';
-import { User } from './model/user.model';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { isValidUUID } from 'src/utils/validateUUID';
 
 @Injectable()
-export class UserService extends BaseService<User> {
-  create(data: { login: string; password: string }) {
-    const id = randomUUID();
-    const newUser = {
-      ...data,
-      id,
-      version: 1,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    };
+export class UserService {
+  constructor(private prisma: PrismaService) {}
 
-    this.items.push(newUser);
-
-    return newUser;
+  async create(data: { login: string; password: string }) {
+    return await this.prisma.user.create({
+      data: {
+        ...data,
+        version: 1,
+      },
+    });
   }
 
-  updatePassword(
+  async findAll() {
+    return await this.prisma.user.findMany();
+  }
+
+  async findById(id: string) {
+    if (!isValidUUID(id)) {
+      throw new BadRequestException('Invalid id');
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User with this id not found');
+    }
+
+    return user;
+  }
+
+  async updatePassword(
     id: string,
     data: { oldPassword: string; newPassword: string },
   ) {
@@ -33,21 +48,40 @@ export class UserService extends BaseService<User> {
       throw new BadRequestException('Invalid id');
     }
 
-    const user = this.findById(id);
+    const user = await this.prisma.user.findUnique({ where: { id } });
+
+    if (!user) {
+      throw new NotFoundException('User with this id not found');
+    }
 
     if (user.password !== data.oldPassword) {
       throw new ForbiddenException('Password is incorrect');
     }
 
-    const updatedUser: User = {
-      ...user,
-      password: data.newPassword,
-      version: ++user.version,
-      updatedAt: Date.now(),
-    };
+    return await this.prisma.user.update({
+      where: { id },
+      data: {
+        password: data.newPassword,
+        version: {
+          increment: 1,
+        },
+      },
+    });
+  }
 
-    Object.assign(user, updatedUser);
+  async delete(id: string) {
+    if (!isValidUUID(id)) {
+      throw new BadRequestException('Invalid id');
+    }
 
-    return updatedUser;
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User with this id not found');
+    }
+
+    return await this.prisma.user.delete({ where: { id } });
   }
 }
