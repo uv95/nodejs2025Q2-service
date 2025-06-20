@@ -40,6 +40,18 @@ export class UserService {
     return user;
   }
 
+  async findByLogin(login: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { login },
+    });
+
+    if (!user) {
+      throw new ForbiddenException('User with this login not found');
+    }
+
+    return user;
+  }
+
   async updatePassword(
     id: string,
     data: { oldPassword: string; newPassword: string },

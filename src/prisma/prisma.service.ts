@@ -14,7 +14,6 @@ export class PrismaService
       process.exit(1);
     }
   }
-
   async onModuleDestroy() {
     try {
       await (this.$disconnect as () => Promise<void>)();
