@@ -28,12 +28,8 @@ enum Action {
 export class FavoritesService {
   constructor(private prisma: PrismaService) {}
 
-  async getFavorites() {
-    const user =
-      (await this.prisma.user.findFirst()) ||
-      (await this.prisma.user.create({
-        data: { login: 'TestUser', password: 'testpassword', version: 1 },
-      })); //temporary
+  async getFavorites(userId: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
 
     const [albums, artists, tracks] = await Promise.all([
       this.prisma.album.findMany({
@@ -102,16 +98,15 @@ export class FavoritesService {
     action: Action,
     id: string,
     entityName: Entity,
+    userId: string,
   ) {
     try {
       const model = entityName.toLowerCase();
       await this.validateItem(model, id);
       const isAddingToFavorites = action === Action.CONNECT;
-      const user =
-        (await this.prisma.user.findFirst()) ||
-        (await this.prisma.user.create({
-          data: { login: 'TestUser', password: 'testpassword', version: 1 },
-        })); //temporary
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+      });
 
       const isInFavorites = await this.isFavorite(model, user.id, id);
 
@@ -142,27 +137,47 @@ export class FavoritesService {
     }
   }
 
-  async addTrack(id: string) {
-    return await this.updateFavorites(Action.CONNECT, id, Entity.TRACK);
+  async addTrack(id: string, userId: string) {
+    return await this.updateFavorites(Action.CONNECT, id, Entity.TRACK, userId);
   }
 
-  async addAlbum(id: string) {
-    return await this.updateFavorites(Action.CONNECT, id, Entity.ALBUM);
+  async addAlbum(id: string, userId: string) {
+    return await this.updateFavorites(Action.CONNECT, id, Entity.ALBUM, userId);
   }
 
-  async addArtist(id: string) {
-    return await this.updateFavorites(Action.CONNECT, id, Entity.ARTIST);
+  async addArtist(id: string, userId: string) {
+    return await this.updateFavorites(
+      Action.CONNECT,
+      id,
+      Entity.ARTIST,
+      userId,
+    );
   }
 
-  async removeTrack(id: string) {
-    return await this.updateFavorites(Action.DISCONNECT, id, Entity.TRACK);
+  async removeTrack(id: string, userId: string) {
+    return await this.updateFavorites(
+      Action.DISCONNECT,
+      id,
+      Entity.TRACK,
+      userId,
+    );
   }
 
-  async removeAlbum(id: string) {
-    return await this.updateFavorites(Action.DISCONNECT, id, Entity.ALBUM);
+  async removeAlbum(id: string, userId: string) {
+    return await this.updateFavorites(
+      Action.DISCONNECT,
+      id,
+      Entity.ALBUM,
+      userId,
+    );
   }
 
-  async removeArtist(id: string) {
-    return await this.updateFavorites(Action.DISCONNECT, id, Entity.ARTIST);
+  async removeArtist(id: string, userId: string) {
+    return await this.updateFavorites(
+      Action.DISCONNECT,
+      id,
+      Entity.ARTIST,
+      userId,
+    );
   }
 }

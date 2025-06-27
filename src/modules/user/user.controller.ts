@@ -8,11 +8,11 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
+import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
+import { UserEntity } from './entity/user.entity';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
-import { plainToInstance } from 'class-transformer';
-import { UserEntity } from './entity/user.entity';
 
 @Controller('user')
 export class UserController {
