@@ -12,6 +12,9 @@ NestJS backend for a home music library management app.
 
 ## Features
 
+- Authentication and authorization (JWT access and refresh tokens)
+- Custom logging service (writing to process.stdout and file with file rotation)
+  - in .env you can set up logging level and max file size 
 - CRUD operations for:
 
   - **Users**
@@ -87,6 +90,14 @@ docker compose up --build
 | POST   | `/user`     | Create new user |
 | PUT    | `/user/:id` | Update user     |
 | DELETE | `/user/:id` | Delete user     |
+
+### Auth
+
+| Method | Endpoint    | Description     |
+| ------ | ----------- | --------------- |
+| POST   | `/auth/signup`     | Sign up   |
+| POST   | `/auth/login` | Log in  |
+| POST   | `/auth/refresh`     | Send refresh token |
 
 ### Tracks
 
